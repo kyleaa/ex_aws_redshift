@@ -1,4 +1,4 @@
-defmodule ExAwsRedshift.Mixfile do
+defmodule ExAws.RedShift.Mixfile do
   use Mix.Project
 
   def project do

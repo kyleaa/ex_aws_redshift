@@ -1,6 +1,6 @@
-defmodule ExAwsRedshift do
+defmodule ExAws.RedShift do
   @moduledoc """
-  Documentation for ExAwsRedshift.
+  Documentation for ExAwsRedShift.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule ExAwsRedshift do
 
   ## Examples
 
-      iex> ExAwsRedshift.hello
+      iex> ExAws.RedShift.hello
       :world
 
   """
