@@ -3,6 +3,48 @@ defmodule ExAws.RedShift do
   Operations on AWS RedShift.
   """
 
+  @type node_type :: [:ds1_xlarge | :ds1_8xlarge | :ds2_xlarge | :ds2_8xlarge |
+                       :dc1_large | :dc1_8xlarge]
+
+  @doc """
+  Create a new cluster with the given cluster id.
+
+  Required keys are ClusterIdentifier, MasterUsername, MasterUserPassword, and NodeType.
+
+  Amazon docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_CreateCluster.html
+
+  ## Examples
+
+    iex> ExAws.RedShift.create_cluster("A2", [MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
+    %ExAws.Operation.Query{action: "CreateCluster",
+      params: %{"ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+    iex> ExAws.RedShift.create_cluster("A2", [ClusterIdentifier: "21O", MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
+    %ExAws.Operation.Query{action: "CreateCluster",
+      params: %{"ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+    iex> ExAws.RedShift.create_cluster([ClusterIdentifier: "2B", MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
+    %ExAws.Operation.Query{action: "CreateCluster",
+      params: %{"ClusterIdentifier" => "2B", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+  """
+  @create_cluster_opts [:ClusterIdentifier, :MasterUsername, :MasterUserPassword,
+    :NodeType, :AllowVersionUpgrade, :AutomatedSnapshotRetentionPeriod, :AvailabilityZone,
+    :ClusterParameterGroupName, :ClusterSubnetGroupName, :ClusterType, :ClusterVersion,
+    :DBName, :ElasticIp, :Encrypted, :HsmClientCertificateIdentifier, :HsmConfigurationIdentifier,
+    :"IamRoles.IamRoleArn.N"]
+  @spec create_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  @spec create_cluster(Keyword.t) :: ExAws.Operation.Query.t
+  def create_cluster(id, opts) when is_bitstring(id) do
+    opts
+    |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
+    |> create_cluster()
+  end
+  def create_cluster(opts) when is_list(opts) do
+    opts
+    |> build_params(@create_cluster_opts)
+    |> build_request("CreateCluster")
+  end
 
   @doc """
   Describe the properties of the given cluster ID. If no cluster ID is given,
