@@ -46,6 +46,36 @@ defmodule ExAws.RedShift do
     |> build_request("CreateCluster")
   end
 
+
+  @doc """
+  Delete a RedShift cluster with the a given identifier.
+
+  Required key is ClusterIdentifier.
+
+  Amazon docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_DeleteCluster.html
+
+  ## Examples
+
+    iex> ExAws.RedShift.delete_cluster("2B", [])
+    %ExAws.Operation.Query{action: "DeleteCluster",
+      params: %{"ClusterIdentifier" => "2B"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+  """
+  @delete_cluster_opts [:ClusterIdentifier, :FinalClusterSnapshotIdentifier, :SkipFinalClusterSnapshot]
+  @spec delete_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  @spec delete_cluster(Keyword.t) :: ExAws.Operation.Query.t
+  def delete_cluster(id, opts) when is_bitstring(id) do
+    opts
+    |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
+    |> delete_cluster()
+  end
+  def delete_cluster(opts) when is_list(opts) do
+    opts
+    |> build_params(@create_cluster_opts)
+    |> build_request("DeleteCluster")
+  end
+
+
   @doc """
   Describe the properties of the given cluster ID. If no cluster ID is given,
   a list of properties for all clusters is returned.
