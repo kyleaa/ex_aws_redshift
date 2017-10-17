@@ -3,32 +3,45 @@ defmodule ExAws.RedShift do
   Operations on AWS RedShift.
   """
 
+
   @doc """
   Describe the properties of the given cluster ID. If no cluster ID is given,
   a list of properties for all clusters is returned.
 
-  Amazon Docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_DescribeClusters.html
+  Amazon docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_DescribeClusters.html
 
   ## Examples
 
-      iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B"])
-      %{"ClusterIdentifier" => "2B"}
-      iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B", some_wrong_key: "Eve"])
-      %{"ClusterIdentifier" => "2B"}
-      iex> ExAws.RedShift.describe_clusters("A2", [])
-      %{"ClusterIdentifier" => "A2"}
-      iex> ExAws.RedShift.describe_clusters("9S", [ClusterIdentifier: "21O"])
-      %{"ClusterIdentifier" => "9S"}
+    iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B"])
+    %ExAws.Operation.Query{action: "DescribeClusters",
+      params: %{"ClusterIdentifier" => "2B"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+    iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B", some_wrong_key: "Eve"])
+    %ExAws.Operation.Query{action: "DescribeClusters",
+      params: %{"ClusterIdentifier" => "2B"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+    iex> ExAws.RedShift.describe_clusters("A2", [])
+    %ExAws.Operation.Query{action: "DescribeClusters",
+      params: %{"ClusterIdentifier" => "A2"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+    iex> ExAws.RedShift.describe_clusters("9S", [ClusterIdentifier: "21O"])
+    %ExAws.Operation.Query{action: "DescribeClusters",
+      params: %{"ClusterIdentifier" => "9S"},
+      parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
-  @describe_opts [:ClusterIdentifier, :Marker, :MaxRecords, :"TagKeys.TagKey.N", :"TagValues.TagValue.N"]
+  @describe_clusters_opts [:ClusterIdentifier, :Marker, :MaxRecords, :"TagKeys.TagKey.N", :"TagValues.TagValue.N"]
   @spec describe_clusters(String.t, Keyword.t) :: ExAws.Operation.Query.t
-  def describe_clusters(nil, opts), do: describe_clusters(opts)
-  def describe_clusters(id, opts) do
+  @spec describe_clusters(Keyword.t) :: ExAws.Operation.Query.t
+  def describe_clusters(id, opts) when is_bitstring(id) do
     opts
     |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
-    |> describe_clusters
+    |> describe_clusters()
   end
-  def describe_clusters(opts \\ []) when is_list(opts), do: opts |> build_params(@describe_opts)
+  def describe_clusters(opts \\ []) when is_list(opts) do
+    opts
+    |> build_params(@describe_clusters_opts)
+    |> build_request("DescribeClusters")
+  end
 
   # This function is used creating a param list that's compliance with
   # `ExAws.Operation.Query`'s struct.
@@ -43,5 +56,16 @@ defmodule ExAws.RedShift do
     |> Enum.reduce(%{}, fn({k, v}, acc) ->
       acc |> Map.put(to_string(k), v)
     end)
+  end
+
+  # This function is used for building a request object that ExAws could use
+  # to make the API call to AWS.
+  @spec build_request(Map.t, String.t) :: %ExAws.Operation.Query{}
+  defp build_request(params, action) do
+    %ExAws.Operation.Query{
+      service: "redshift",
+      action: action,
+      params: params
+    }
   end
 end
