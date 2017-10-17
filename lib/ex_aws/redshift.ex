@@ -37,7 +37,7 @@ defmodule ExAws.RedShift do
   @spec create_cluster(Keyword.t) :: ExAws.Operation.Query.t
   def create_cluster(id, opts) when is_bitstring(id) do
     opts
-    |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
+    |> set(:ClusterIdentifier, id)
     |> create_cluster()
   end
   def create_cluster(opts) when is_list(opts) do
@@ -66,7 +66,7 @@ defmodule ExAws.RedShift do
   @spec delete_cluster(Keyword.t) :: ExAws.Operation.Query.t
   def delete_cluster(id, opts) when is_bitstring(id) do
     opts
-    |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
+    |> set(:ClusterIdentifier, id)
     |> delete_cluster()
   end
   def delete_cluster(opts) when is_list(opts) do
@@ -106,13 +106,24 @@ defmodule ExAws.RedShift do
   @spec describe_clusters(Keyword.t) :: ExAws.Operation.Query.t
   def describe_clusters(id, opts) when is_bitstring(id) do
     opts
-    |> Keyword.update(:ClusterIdentifier, id, fn(_) -> id end)
+    |> set(:ClusterIdentifier, id)
     |> describe_clusters()
   end
   def describe_clusters(opts \\ []) when is_list(opts) do
     opts
     |> build_params(@describe_clusters_opts)
     |> build_request("DescribeClusters")
+  end
+
+
+  # This function is used for setting the key value pair into the option list.
+  # It inherits the functionality of `Keyword.update/4` meaning if there's any
+  # duplicate keys, it removes all instances of the key and replace it with
+  # only what's given to the function.
+  @spec set(Keyword.t, Atom.t, Any.t) :: Keyword.t
+  defp set(opts, key, value) do
+    opts
+    |> Keyword.update(key, value, fn(_) -> value end)
   end
 
   # This function is used creating a param list that's compliance with
