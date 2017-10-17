@@ -1,0 +1,21 @@
+version: "3"
+services:
+  test:
+    build:
+      context: ./
+    image: "ex_aws_redshift:0.1.0"
+    environment:
+      MIX_ENV: "dev"
+    command: "mix test"
+    working_dir: /ex_aws_redshift
+    volumes:
+      - ./:/ex_aws_redshift
+
+  credo:
+    build:
+      context: ./
+    image: "ex_aws_redshift:0.1.0"
+    command: "mix credo"
+    working_dir: /ex_aws_redshift
+    volumes:
+      - ./:/ex_aws_redshift
