@@ -64,8 +64,8 @@ defmodule ExAws.RedShift do
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @delete_cluster_opts [:ClusterIdentifier, :FinalClusterSnapshotIdentifier, :SkipFinalClusterSnapshot]
-  @spec delete_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
   @spec delete_cluster(Keyword.t) :: ExAws.Operation.Query.t
+  @spec delete_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
   def delete_cluster(opts) when is_list(opts) do
     opts
     |> build_params(@delete_cluster_opts)
@@ -107,8 +107,8 @@ defmodule ExAws.RedShift do
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @describe_clusters_opts [:ClusterIdentifier, :Marker, :MaxRecords, :"TagKeys.TagKey.N", :"TagValues.TagValue.N"]
-  @spec describe_clusters(String.t, Keyword.t) :: ExAws.Operation.Query.t
   @spec describe_clusters(Keyword.t) :: ExAws.Operation.Query.t
+  @spec describe_clusters(String.t, Keyword.t) :: ExAws.Operation.Query.t
   def describe_clusters(opts \\ []) when is_list(opts) do
     opts
     |> build_params(@describe_clusters_opts)
@@ -120,6 +120,49 @@ defmodule ExAws.RedShift do
     |> describe_clusters()
   end
 
+
+  @doc """
+  Modify a cluster with a given ClusterIdentifier.
+
+  Required key is ClusterIdentifier.
+
+  Amazon docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_ModifyCluster.html
+
+  ## Examples
+
+      iex> ExAws.RedShift.modify_cluster("Adam", [])
+      %ExAws.Operation.Query{action: "ModifyCluster",
+        params: %{"ClusterIdentifier" => "Adam"},
+        parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+
+      iex> ExAws.RedShift.modify_cluster("Adam", [NewClusterIdentifier: "Eve"])
+      %ExAws.Operation.Query{action: "ModifyCluster",
+        params: %{"ClusterIdentifier" => "Adam", "NewClusterIdentifier" => "Eve"},
+        parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+
+      iex> ExAws.RedShift.modify_cluster("Adam", [ClusterIdentifier: "Eve"])
+      %ExAws.Operation.Query{action: "ModifyCluster",
+        params: %{"ClusterIdentifier" => "Adam"},
+        parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
+  """
+  @modify_cluster_opts [:ClusterIdentifier, :AdditionalInfo, :AllowVersionUpgrade,
+    :AutomatedSnapshotRetentionPeriod, :ClusterParameterGroupName, :"ClusterSecurityGroups.ClusterSecurityGroupName.N",
+    :ClusterType, :ClusterVersion, :ElasticIp, :EnhancedVpcRouting, :HsmClientCertificateIdentifier,
+    :HsmConfigurationIdentifier, :MasterUserPassword, :NewClusterIdentifier,
+    :NodeType, :NumberOfNodes, :PreferredMaintenanceWindow, :PubliclyAccessible,
+    :"VpcSecurityGroupIds.VpcSecurityGroupId.N"]
+  @spec modify_cluster(Keyword.t) :: ExAws.Operation.Query.t
+  @spec modify_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  def modify_cluster(opts) do
+    opts
+    |> build_params(@modify_cluster_opts)
+    |> build_request("ModifyCluster")
+  end
+  def modify_cluster(id, opts \\ []) do
+    opts
+    |> set(:ClusterIdentifier, id)
+    |> modify_cluster()
+  end
 
   # This function is used for setting the key value pair into the option list.
   # It inherits the functionality of `Keyword.update/4` meaning if there's any
