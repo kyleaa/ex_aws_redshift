@@ -7,7 +7,12 @@ defmodule ExAws.RedShift.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+
+      # docs
+      name: "ExAws.RedShift",
+      source_url: "https://github.com/mayppong/ex_aws_redshift",
+      docs: [main: "ExAws.RedShift", extras: ["README.md"]]
     ]
   end
 
@@ -22,7 +27,8 @@ defmodule ExAws.RedShift.Mixfile do
   defp deps do
     [
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
-     {:ex_aws, "~> 1.1"}
+     {:ex_aws, "~> 1.1"},
+     {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
   end
 end

@@ -19,3 +19,12 @@ services:
     working_dir: /ex_aws_redshift
     volumes:
       - ./:/ex_aws_redshift
+
+  docs:
+    build:
+      context: ./
+    image: "ex_aws_redshift:0.1.0"
+    command: "mix docs"
+    working_dir: /ex_aws_redshift
+    volumes:
+      - ./:/ex_aws_redshift
