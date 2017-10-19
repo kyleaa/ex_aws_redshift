@@ -17,17 +17,17 @@ defmodule ExAws.RedShift do
 
       iex> ExAws.RedShift.create_cluster("A2", [MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
       %ExAws.Operation.Query{action: "CreateCluster",
-        params: %{"ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+        params: %{"Action" => "CreateCluster", "ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.create_cluster("A2", [ClusterIdentifier: "21O", MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
       %ExAws.Operation.Query{action: "CreateCluster",
-        params: %{"ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+        params: %{"Action" => "CreateCluster", "ClusterIdentifier" => "A2", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.create_cluster([ClusterIdentifier: "2B", MasterUsername: "Nier", MasterUserPassword: "Automata", NodeType: "dc1_large"])
       %ExAws.Operation.Query{action: "CreateCluster",
-        params: %{"ClusterIdentifier" => "2B", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
+        params: %{"Action" => "CreateCluster", "ClusterIdentifier" => "2B", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @create_cluster_opts [:ClusterIdentifier, :MasterUsername, :MasterUserPassword,
@@ -60,7 +60,7 @@ defmodule ExAws.RedShift do
 
       iex> ExAws.RedShift.delete_cluster("2B", [])
       %ExAws.Operation.Query{action: "DeleteCluster",
-        params: %{"ClusterIdentifier" => "2B"},
+        params: %{"Action" => "DeleteCluster", "ClusterIdentifier" => "2B"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @delete_cluster_opts [:ClusterIdentifier, :FinalClusterSnapshotIdentifier, :SkipFinalClusterSnapshot]
@@ -88,22 +88,22 @@ defmodule ExAws.RedShift do
 
       iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B"])
       %ExAws.Operation.Query{action: "DescribeClusters",
-        params: %{"ClusterIdentifier" => "2B"},
+        params: %{"Action" => "DescribeClusters", "ClusterIdentifier" => "2B"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.describe_clusters([ClusterIdentifier: "2B", some_wrong_key: "Eve"])
       %ExAws.Operation.Query{action: "DescribeClusters",
-        params: %{"ClusterIdentifier" => "2B"},
+        params: %{"Action" => "DescribeClusters", "ClusterIdentifier" => "2B"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.describe_clusters("A2", [])
       %ExAws.Operation.Query{action: "DescribeClusters",
-        params: %{"ClusterIdentifier" => "A2"},
+        params: %{"Action" => "DescribeClusters", "ClusterIdentifier" => "A2"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.describe_clusters("9S", [ClusterIdentifier: "21O"])
       %ExAws.Operation.Query{action: "DescribeClusters",
-        params: %{"ClusterIdentifier" => "9S"},
+        params: %{"Action" => "DescribeClusters", "ClusterIdentifier" => "9S"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @describe_clusters_opts [:ClusterIdentifier, :Marker, :MaxRecords, :"TagKeys.TagKey.N", :"TagValues.TagValue.N"]
@@ -132,17 +132,17 @@ defmodule ExAws.RedShift do
 
       iex> ExAws.RedShift.modify_cluster("Adam", [])
       %ExAws.Operation.Query{action: "ModifyCluster",
-        params: %{"ClusterIdentifier" => "Adam"},
+        params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.modify_cluster("Adam", [NewClusterIdentifier: "Eve"])
       %ExAws.Operation.Query{action: "ModifyCluster",
-        params: %{"ClusterIdentifier" => "Adam", "NewClusterIdentifier" => "Eve"},
+        params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam", "NewClusterIdentifier" => "Eve"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
       iex> ExAws.RedShift.modify_cluster("Adam", [ClusterIdentifier: "Eve"])
       %ExAws.Operation.Query{action: "ModifyCluster",
-        params: %{"ClusterIdentifier" => "Adam"},
+        params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
   @modify_cluster_opts [:ClusterIdentifier, :AdditionalInfo, :AllowVersionUpgrade,
@@ -196,7 +196,7 @@ defmodule ExAws.RedShift do
     %ExAws.Operation.Query{
       service: "redshift",
       action: action,
-      params: params
+      params: params |> Map.put("Action", action)
     }
   end
 end
