@@ -17,7 +17,7 @@ defmodule ExAws.RedShift do
     | {:automated_snapshot_retention_period, 0..35}
     | {:availability_zone, binary}
     | {:cluster_parameter_group_name, binary}
-    | {:"cluster_security_groups/_cluster_security_group_name", [binary]}
+    | {:cluster_security_groups, [binary]}
     | {:cluster_subnet_group_name, binary}
     | {:cluster_type, :"multi-node" | :"single-node"}
     | {:cluster_version, binary}
@@ -27,7 +27,7 @@ defmodule ExAws.RedShift do
     | {:enhanced_vpc_routing, :boolean}
     | {:hsm_client_certificate_identifier, binary}
     | {:hsm_configuration_identifier, binary}
-    | {:"iam_roles/_iam_role_arn", [binary]}
+    | {:iam_roles, [binary]}
   ]
   @create_cluster_opts [:cluster_identifier, :master_username, :master_user_password,
     :node_type, :allow_version_upgrade, :automated_snapshot_retention_period, :availability_zone,
@@ -64,6 +64,16 @@ defmodule ExAws.RedShift do
   @spec create_cluster(String.t, create_cluster_opts) :: ExAws.Operation.Query.t
   def create_cluster(opts) when is_list(opts) do
     opts
+    |> Enum.map(fn({k, v}) ->
+      k = k
+      |> case do
+        :iam_roles -> :"iam_roles/_iam_role_arn"
+        :cluster_security_groups -> :"cluster_security_groups/_cluster_security_group_name"
+        _ -> k
+      end
+
+      {k, v}
+    end)
     |> build_params(@create_cluster_opts)
     |> build_request("CreateCluster")
   end
@@ -112,8 +122,8 @@ defmodule ExAws.RedShift do
     {:cluster_identifier, binary}
     | {:marker, binary}
     | {:max_records, 20..100}
-    | {:"tag_keys/_tag_key", binary}
-    | {:"tag_values/_tag_value", binary}
+    | {:tag_keys, binary}
+    | {:tag_values, binary}
   ]
   @describe_clusters_opts [:cluster_identifier, :marker, :max_records, :"tag_keys/_tag_key",
     :"tag_values/_tag_value"]
@@ -149,6 +159,15 @@ defmodule ExAws.RedShift do
   @spec describe_clusters(String.t, describe_clusters_opts) :: ExAws.Operation.Query.t
   def describe_clusters(opts \\ []) when is_list(opts) do
     opts
+    |> Enum.map(fn({k, v}) ->
+      k = k
+      |> case do
+        :tag_keys -> :"tag_keys/_tag_key"
+        :tag_values -> :"tag_values/_tag_value"
+        _ -> k
+      end
+      {k, v}
+    end)
     |> build_params(@describe_clusters_opts)
     |> build_request("DescribeClusters")
   end
@@ -165,7 +184,7 @@ defmodule ExAws.RedShift do
     | {:allow_version_upgrade, boolean}
     | {:automated_snapshot_retention_period, 0..35}
     | {:cluster_parameter_group_name, binary}
-    | {:"cluster_security_groups/_cluster_security_group_name", [binary]}
+    | {:cluster_security_groups, [binary]}
     | {:cluster_type, binary}
     | {:cluster_version, binary}
     | {:elastic_ip, binary}
@@ -178,7 +197,7 @@ defmodule ExAws.RedShift do
     | {:number_of_nodes, integer}
     | {:preferred_maintenance_window, binary}
     | {:publicly_accessible, boolean}
-    | {:"vpc_security_group_ids/_vpc_security_group_id", [binary]}
+    | {:vpc_security_groups, [binary]}
   ]
   @modify_cluster_opts [:cluster_identifier, :additional_info, :allow_version_upgrade,
     :automated_snapshot_retention_period, :cluster_parameter_group_name, :"cluster_security_groups/_cluster_security_group_name",
@@ -205,7 +224,7 @@ defmodule ExAws.RedShift do
         params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam", "NewClusterIdentifier" => "Eve"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
 
-      iex> ExAws.RedShift.modify_cluster("Adam", [cluster_identifier: "Eve", "cluster_security_groups/_cluster_security_group_name": ["test", "tast"]])
+      iex> ExAws.RedShift.modify_cluster("Adam", [cluster_identifier: "Eve", cluster_security_groups: ["test", "tast"]])
       %ExAws.Operation.Query{action: "ModifyCluster",
         params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam", "ClusterSecurityGroups.ClusterSecurityGroupName.1" => "test", "ClusterSecurityGroups.ClusterSecurityGroupName.2" => "tast"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
@@ -214,6 +233,15 @@ defmodule ExAws.RedShift do
   @spec modify_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
   def modify_cluster(opts) when is_list(opts) do
     opts
+    |> Enum.map(fn({k, v}) ->
+      k = k
+      |> case do
+        :cluster_security_groups -> :"cluster_security_groups/_cluster_security_group_name"
+        :vpc_security_groups -> :"vpc_security_group_ids/_vpc_security_group_id"
+        _ -> k
+      end
+      {k, v}
+    end)
     |> build_params(@modify_cluster_opts)
     |> build_request("ModifyCluster")
   end
