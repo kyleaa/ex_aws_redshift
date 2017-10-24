@@ -8,10 +8,38 @@ defmodule ExAws.RedShift do
   @type node_type :: [:ds1_xlarge | :ds1_8xlarge | :ds2_xlarge | :ds2_8xlarge |
                        :dc1_large | :dc1_8xlarge]
 
+  @type create_cluster_opts :: [
+    {:cluster_identifier, binary}
+    | {:master_username, binary}
+    | {:master_user_password, binary}
+    | {:node_type, node_type}
+    | {:allow_version_upgrade, boolean}
+    | {:automated_snapshot_retention_period, 0..35}
+    | {:availability_zone, binary}
+    | {:cluster_parameter_group_name, binary}
+    | {:"cluster_security_groups/_cluster_security_group_name", [binary]}
+    | {:cluster_subnet_group_name, binary}
+    | {:cluster_type, :"multi-node" | :"single-node"}
+    | {:cluster_version, binary}
+    | {:db_name, binary}
+    | {:elastic_ip, binary}
+    | {:encrypted, boolean}
+    | {:enhanced_vpc_routing, :boolean}
+    | {:hsm_client_certificate_identifier, binary}
+    | {:hsm_configuration_identifier, binary}
+    | {:"iam_roles/_iam_role_arn", [binary]}
+  ]
+  @create_cluster_opts [:cluster_identifier, :master_username, :master_user_password,
+    :node_type, :allow_version_upgrade, :automated_snapshot_retention_period, :availability_zone,
+    :cluster_parameter_group_name, :"cluster_security_groups/_cluster_security_group_name",
+    :cluster_subnet_group_name, :cluster_type, :cluster_version, :db_name, :elastic_ip,
+    :encrypted, :hsm_client_certificate_identifier, :hsm_configuration_identifier,
+    :"iam_roles/_iam_role_arn"]
   @doc """
   Create a new cluster with the given cluster id.
 
-  Required keys are cluster_identifier, master_username, master_user_password, and node_type.
+  Required keys are cluster_identifier, master_username, master_user_password,
+  and node_type.
 
   Amazon docs: http://docs.aws.amazon.com/redshift/latest/APIReference/API_CreateCluster.html
 
@@ -32,13 +60,8 @@ defmodule ExAws.RedShift do
         params: %{"Action" => "CreateCluster", "ClusterIdentifier" => "2B", "MasterUsername" => "Nier", "MasterUserPassword" => "Automata", "NodeType" => "dc1_large"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
-  @create_cluster_opts [:cluster_identifier, :master_username, :master_user_password,
-    :node_type, :allow_version_upgrade, :automated_snapshot_retention_period, :availability_zone,
-    :cluster_parameter_group_name, :cluster_subnet_group_name, :cluster_type, :cluster_version,
-    :db_name, :elastic_ip, :encrypted, :hsm_client_certificate_identifier, :hsm_configuration_identifier,
-    :"iam_roles/_iam_role_arn"]
-  @spec create_cluster(Keyword.t) :: ExAws.Operation.Query.t
-  @spec create_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  @spec create_cluster(create_cluster_opts) :: ExAws.Operation.Query.t
+  @spec create_cluster(String.t, create_cluster_opts) :: ExAws.Operation.Query.t
   def create_cluster(opts) when is_list(opts) do
     opts
     |> build_params(@create_cluster_opts)
@@ -51,6 +74,12 @@ defmodule ExAws.RedShift do
   end
 
 
+  @type delete_cluster_opts :: [
+    {:cluster_identifier, binary}
+    | {:final_cluster_snapshot_identifier, binary}
+    | {:skip_final_cluster_snapshot, boolean}
+  ]
+  @delete_cluster_opts [:cluster_identifier, :final_cluster_snapshot_identifier, :skip_final_cluster_snapshot]
   @doc """
   Delete a RedShift cluster with the a given identifier.
 
@@ -65,10 +94,8 @@ defmodule ExAws.RedShift do
         params: %{"Action" => "DeleteCluster", "ClusterIdentifier" => "2B"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
-  @type delete_cluster_opts :: []
-  @delete_cluster_opts [:cluster_identifier, :final_cluster_snapshot_identifier, :skip_final_cluster_snapshot]
   @spec delete_cluster(Keyword.t) :: ExAws.Operation.Query.t
-  @spec delete_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  @spec delete_cluster(String.t, delete_cluster_opts) :: ExAws.Operation.Query.t
   def delete_cluster(opts) when is_list(opts) do
     opts
     |> build_params(@delete_cluster_opts)
@@ -81,6 +108,15 @@ defmodule ExAws.RedShift do
   end
 
 
+  @type describe_clusters_opts :: [
+    {:cluster_identifier, binary}
+    | {:marker, binary}
+    | {:max_records, 20..100}
+    | {:"tag_keys/_tag_key", binary}
+    | {:"tag_values/_tag_value", binary}
+  ]
+  @describe_clusters_opts [:cluster_identifier, :marker, :max_records, :"tag_keys/_tag_key",
+    :"tag_values/_tag_value"]
   @doc """
   Describe the properties of the given cluster ID. If no cluster ID is given,
   a list of properties for all clusters is returned.
@@ -109,10 +145,8 @@ defmodule ExAws.RedShift do
         params: %{"Action" => "DescribeClusters", "ClusterIdentifier" => "9S"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
-  @describe_clusters_opts [:cluster_identifier, :marker, :max_records, :"tag_keys/_tag_key",
-    :"tag_values/_tag_value"]
-  @spec describe_clusters(Keyword.t) :: ExAws.Operation.Query.t
-  @spec describe_clusters(String.t, Keyword.t) :: ExAws.Operation.Query.t
+  @spec describe_clusters(describe_clusters_opts) :: ExAws.Operation.Query.t
+  @spec describe_clusters(String.t, describe_clusters_opts) :: ExAws.Operation.Query.t
   def describe_clusters(opts \\ []) when is_list(opts) do
     opts
     |> build_params(@describe_clusters_opts)
@@ -125,6 +159,33 @@ defmodule ExAws.RedShift do
   end
 
 
+  @type modify_cluster_opts :: [
+    {:cluster_identifier, binary}
+    | {:additional_info, binary}
+    | {:allow_version_upgrade, boolean}
+    | {:automated_snapshot_retention_period, 0..35}
+    | {:cluster_parameter_group_name, binary}
+    | {:"cluster_security_groups/_cluster_security_group_name", [binary]}
+    | {:cluster_type, binary}
+    | {:cluster_version, binary}
+    | {:elastic_ip, binary}
+    | {:enhanced_vpc_routing, boolean}
+    | {:hsm_client_certificate_identifier, binary}
+    | {:hsm_onfiguration_identifier, binary}
+    | {:master_user_password, binary}
+    | {:new_cluster_identifier, binary}
+    | {:node_type, node_type}
+    | {:number_of_nodes, integer}
+    | {:preferred_maintenance_window, binary}
+    | {:publicly_accessible, boolean}
+    | {:"vpc_security_group_ids/_vpc_security_group_id", [binary]}
+  ]
+  @modify_cluster_opts [:cluster_identifier, :additional_info, :allow_version_upgrade,
+    :automated_snapshot_retention_period, :cluster_parameter_group_name, :"cluster_security_groups/_cluster_security_group_name",
+    :cluster_type, :cluster_version, :elastic_ip, :enhanced_vpc_routing, :hsm_client_certificate_identifier,
+    :hsm_onfiguration_identifier, :master_user_password, :new_cluster_identifier,
+    :node_type, :number_of_nodes, :preferred_maintenance_window, :publicly_accessible,
+    :"vpc_security_group_ids/_vpc_security_group_id"]
   @doc """
   Modify a cluster with a given ClusterIdentifier.
 
@@ -149,12 +210,6 @@ defmodule ExAws.RedShift do
         params: %{"Action" => "ModifyCluster", "ClusterIdentifier" => "Adam", "ClusterSecurityGroups.ClusterSecurityGroupName.1" => "test", "ClusterSecurityGroups.ClusterSecurityGroupName.2" => "tast"},
         parser: &ExAws.Utils.identity/2, path: "/", service: "redshift"}
   """
-  @modify_cluster_opts [:cluster_identifier, :additional_info, :allow_version_upgrade,
-    :automated_snapshot_retention_period, :cluster_parameter_group_name, :"cluster_security_groups/_cluster_security_group_name",
-    :cluster_type, :cluster_version, :elastic_ip, :enhanced_vpc_routing, :hsm_client_certificate_identifier,
-    :hsm_onfiguration_identifier, :master_user_password, :new_cluster_identifier,
-    :node_type, :number_of_nodes, :preferred_maintenance_window, :publicly_accessible,
-    :"vpc_security_group_ids/_vpc_security_group_id"]
   @spec modify_cluster(Keyword.t) :: ExAws.Operation.Query.t
   @spec modify_cluster(String.t, Keyword.t) :: ExAws.Operation.Query.t
   def modify_cluster(opts) when is_list(opts) do
@@ -189,6 +244,7 @@ defmodule ExAws.RedShift do
       iex> ExAws.RedShift.expand_params({"iam_roles/_iam_role_arn", []})
       []
   """
+  @spec expand_params(Tuple.t, String.t) :: List.t
   def expand_params(item, separator \\ "/")
   def expand_params({k, v}, separator) when is_list(v) do
     {params, _} = v
