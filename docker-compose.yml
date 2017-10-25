@@ -5,7 +5,7 @@ services:
       context: ./
     image: "ex_aws_redshift:0.1.0"
     environment:
-      MIX_ENV: "dev"
+      MIX_ENV: "test"
     command: "mix test"
     working_dir: /ex_aws_redshift
     volumes:
