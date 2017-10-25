@@ -5,8 +5,9 @@ defmodule ExAws.RedShift do
 
   import ExAws.Utils, only: [camelize_key: 1]
 
-  @type node_type :: [:ds1_xlarge | :ds1_8xlarge | :ds2_xlarge | :ds2_8xlarge |
-                       :dc1_large | :dc1_8xlarge]
+  @type node_type :: [:"ds1.xlarge" | :"ds1.8xlarge" | :"ds2.xlarge" | :"ds2.8xlarge" |
+                      :"dc1.large" | :"dc1.8xlarge"]
+  @type cluster_type :: [:"multi-node" | :"single-node"]
 
   @type create_cluster_opts :: [
     {:cluster_identifier, binary}
@@ -19,7 +20,7 @@ defmodule ExAws.RedShift do
     | {:cluster_parameter_group_name, binary}
     | {:cluster_security_groups, [binary]}
     | {:cluster_subnet_group_name, binary}
-    | {:cluster_type, :"multi-node" | :"single-node"}
+    | {:cluster_type, cluster_type}
     | {:cluster_version, binary}
     | {:db_name, binary}
     | {:elastic_ip, binary}
@@ -185,7 +186,7 @@ defmodule ExAws.RedShift do
     | {:automated_snapshot_retention_period, 0..35}
     | {:cluster_parameter_group_name, binary}
     | {:cluster_security_groups, [binary]}
-    | {:cluster_type, binary}
+    | {:cluster_type, cluster_type}
     | {:cluster_version, binary}
     | {:elastic_ip, binary}
     | {:enhanced_vpc_routing, boolean}
