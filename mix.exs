@@ -8,7 +8,13 @@ defmodule ExAws.RedShift.Mixfile do
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
       deps: deps(),
-
+      # Hex
+      description: "A RedShift service package for ex_aws.",
+      package: [
+        maintainers: ["May Pongpitpitak"],
+        licenses: ["MIT"],
+        links: %{"Github" => "https://github.com/mayppong/ex_aws_redshift"}
+      ],
       # docs
       name: "ExAws.RedShift",
       source_url: "https://github.com/mayppong/ex_aws_redshift",
