@@ -33,7 +33,7 @@ defmodule ExAws.RedShift.Mixfile do
   defp deps do
     [
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
-     {:ex_aws, "~> 1.1"},
+     {:ex_aws, "~> 2.0"},
      {:ex_doc, "~> 0.18", only: :dev, runtime: false},
      {:hackney, "~> 1.9"},
      {:poison, " ~> 3.1"}
